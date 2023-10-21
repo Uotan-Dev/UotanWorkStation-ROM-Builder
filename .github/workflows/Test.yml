@@ -19,6 +19,7 @@ jobs:
             ROM_PATCH="ROM2"
           fi
           echo "::env name=new_variable::$ROM_PATCH"
+          echo "${{ env.new_variable }}"
 
     - name: Print
       run: |
