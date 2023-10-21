@@ -18,9 +18,8 @@ jobs:
           else
             ROM_PATCH="ROM2"
           fi
-          echo "PATCH=$ROM_PATCH" >patch.txt
+          echo "::set-env name=new_variable::$ROM_PATCH"
 
     - name: Print
       run: |
-        source patch.txt
-        echo "$PATCH"
+        echo "${{ env.new_variable }}"
