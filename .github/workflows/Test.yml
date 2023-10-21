@@ -1,16 +1,26 @@
-name: Greeting from Mona
+name: Test
 on: 
     workflow_dispatch:
+      inputs:
+        ROM_NAME:
+          description: 'ROM_NAME (Only support Arrow,Lineage,PixelExperience,AOSPA,crDroid,Evolution-X. Other ROM please create an issue in this repository.)'
+          required: true
 
 jobs:
   my-job:
     name: My Job
     runs-on: self-hosted
     steps:
-    - name: Print a greeting
-      run: |
-        cd /home/localhost/ROM1
-        ls
+    - name: Set variable 1
+      if: github.event.inputs.ROM_NAME == 'Arrow' || github.event.inputs.ROM_NAME == 'Lineage' || github.event.inputs.ROM_NAME == 'PixelExperience'
+      env:
+        PATCH: ROM1
+
+    - name: Set variable 2
+      if: github.event.inputs.ROM_NAME == 'AOSPA' || github.event.inputs.ROM_NAME == 'crDroid' || github.event.inputs.ROM_NAME == 'Evolution-X'
+      env:
+        PATCH: ROM2
+
     - name: Print
       run: |
-        ls
+        echo $PATCH
