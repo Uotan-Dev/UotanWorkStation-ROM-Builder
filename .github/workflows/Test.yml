@@ -20,7 +20,7 @@ jobs:
             echo
             ROM_PATCH="ROM2"
           fi
-          export PATCH=$ROM_PATCH
+          echo "::env PATCH=ROM_PATCH::$ROM_PATCH"
 
     - name: Print
       run: |
