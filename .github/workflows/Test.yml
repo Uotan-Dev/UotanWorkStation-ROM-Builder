@@ -11,15 +11,16 @@ jobs:
     name: My Job
     runs-on: self-hosted
     steps:
-    - name: Set variable 1
-      if: github.event.inputs.ROM_NAME == 'Arrow' || github.event.inputs.ROM_NAME == 'Lineage' || github.event.inputs.ROM_NAME == 'PixelExperience'
-      env:
-        PATCH: ROM1
-
-    - name: Set variable 2
-      if: github.event.inputs.ROM_NAME == 'AOSPA' || github.event.inputs.ROM_NAME == 'crDroid' || github.event.inputs.ROM_NAME == 'Evolution-X'
-      env:
-        PATCH: ROM2
+    - name: Set variable
+      run: |
+          if [ ${{ github.event.inputs.DEVICE_TREE_URL }} = "Arrow" ]; then
+            echo
+            ROM_PATCH="ROM1"
+          else
+            echo
+            ROM_PATCH="ROM2"
+          fi
+          echo "::env PATCH=ROM_PATCH::$ROM_PATCH"
 
     - name: Print
       run: |
