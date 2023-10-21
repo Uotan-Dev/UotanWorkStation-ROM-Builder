@@ -18,8 +18,9 @@ jobs:
           else
             ROM_PATCH="ROM2"
           fi
-          echo "$ROM_PATCH"
+          echo "PATCH=$ROM_PATCH" >patch.txt
 
     - name: Print
       run: |
+        source patch.txt
         echo "$PATCH"
