@@ -9,4 +9,5 @@ jobs:
     steps:
     - name: Print a greeting
       run: |
+        cd /home/localhost/ROM1
         ls
