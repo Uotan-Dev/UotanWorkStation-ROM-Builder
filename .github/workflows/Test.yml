@@ -1,0 +1,12 @@
+name: Greeting from Mona
+on: 
+    workflow_dispatch:
+
+jobs:
+  my-job:
+    name: My Job
+    runs-on: ubuntu-latest
+    steps:
+    - name: Print a greeting
+      run: |
+        ls
