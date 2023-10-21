@@ -13,7 +13,7 @@ jobs:
     steps:
     - name: Set variable
       run: |
-          if [ ${{ github.event.inputs.DEVICE_TREE_URL }} == "Arrow" ]; then
+          if [ ${{ github.event.inputs.ROM_NAME }} == "Arrow" ]; then
             echo
             ROM_PATCH="ROM1"
           else
