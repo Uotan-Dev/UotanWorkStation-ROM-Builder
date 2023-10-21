@@ -11,3 +11,6 @@ jobs:
       run: |
         cd /home/localhost/ROM1
         ls
+    - name: Print
+      run: |
+        ls
