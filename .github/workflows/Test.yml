@@ -18,8 +18,7 @@ jobs:
           else
             ROM_PATCH="ROM2"
           fi
-          export PATCH=$ROM_PATCH
-          echo "$PATCH"
+          echo "$ROM_PATCH"
 
     - name: Print
       run: |
