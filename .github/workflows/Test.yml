@@ -13,14 +13,14 @@ jobs:
     steps:
     - name: Set variable
       run: |
-          if [ ${{ github.event.inputs.DEVICE_TREE_URL }} = "Arrow" ]; then
+          if [ ${{ github.event.inputs.DEVICE_TREE_URL }} == "Arrow" ]; then
             echo
             ROM_PATCH="ROM1"
           else
             echo
             ROM_PATCH="ROM2"
           fi
-          echo "::env PATCH=ROM_PATCH::$ROM_PATCH"
+          export PATCH=$ROM_PATCH
 
     - name: Print
       run: |
