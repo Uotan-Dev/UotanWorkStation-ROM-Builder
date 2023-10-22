@@ -55,31 +55,31 @@ jobs:
 
     - name: Clone device tree
       run: |
-        git clone ${{ github.event.inputs.DEVICE_TREE_URL_BRANCH }} ./device/${{ github.event.inputs.DEVICE_PATH }}
+        git clone ${{ github.event.inputs.DEVICE_TREE_URL_BRANCH }} --depth=1 ./device/${{ github.event.inputs.DEVICE_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
 
     - name: Clone common tree
       if: |
         ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }} != null 
       run: |
-        git clone ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }} ./device/${{ github.event.inputs.COMMON_PATH }}
+        git clone ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }} --depth=1 ./device/${{ github.event.inputs.COMMON_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
 
     - name: Clone kernel
       run: |
-        git clone ${{ github.event.inputs.KERNEL_SOURCE_URL_BRANCH }} ./kernel/${{ github.event.inputs.KERNEL_SOURCE_PATH }}
+        git clone ${{ github.event.inputs.KERNEL_SOURCE_URL_BRANCH }} --depth=1 ./kernel/${{ github.event.inputs.KERNEL_SOURCE_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
 
     - name: Clone vendor blobs
       run: |
-        git clone ${{ github.event.inputs.VENDOR_BLOBS_URL_BRANCH }} ./vendor/${{ github.event.inputs.DEVICE_PATH }}
+        git clone ${{ github.event.inputs.VENDOR_BLOBS_URL_BRANCH }} --depth=1 ./vendor/${{ github.event.inputs.DEVICE_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
 
     - name: Clone common blobs
       if: |
         ${{ github.event.inputs.COMMON_BLOBS_URL_BRANCH }} != null 
       run: |
-        git clone ${{ github.event.inputs.COMMON_BLOBS_URL_BRANCH }} ./vendor/${{ github.event.inputs.COMMON_PATH }}
+        git clone ${{ github.event.inputs.COMMON_BLOBS_URL_BRANCH }} --depth=1 ./vendor/${{ github.event.inputs.COMMON_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
 
     - name: Building ROM
