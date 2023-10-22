@@ -98,10 +98,3 @@ jobs:
     - name: Clone vendor blobs
       run: |
         git clone ${{ github.event.inputs.VENDOR_BLOBS_URL }} -b ${{ github.event.inputs.VENDOR_BLOBS_BRANCH }} ./vendor/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.DEVICE_CODENAME }}
-
-    - name: Building ROM
-      run: |
-        . build/envsetup.sh
-        mka clean
-        lunch ${{ github.event.inputs.MAKEFILE_NAME }}-${{ github.event.inputs.BUILD_TYPE }}
-        mka ${{ github.event.inputs.BUILD_TARGET }}
