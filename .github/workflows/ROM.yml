@@ -9,30 +9,14 @@ on:
       ANDROID_VERSION:
         description: 'ANDROID_VERSION (Only support 13,14)'
         required: true
-      BRAND_NAME:
-        description: 'BRAND_NAME'
-        required: true
-      DEVICE_CODENAME:
-        description: 'DEVICE_CODENAME'
-        required: true
-      DEVICE_TREE_URL:
-        description: 'DEVICE_TREE_URL'
-        required: true
-      DEVICE_TREE_BRANCH:
-        description: 'DEVICE_TREE_BRANCH'
-        required: true
-      COMMON_TREE_URL:
-        description: 'COMMON_TREE_URL (if no common tree, leave blank)'
-        required: false
-      COMMON_TREE_BRANCH:
-        description: 'COMMON_TREE_BRANCH (if no common tree, leave blank)'
-        required: false
-      COMMON_TREE_FOLDER_NAME:
-        description: 'COMMON_TREE_FOLDER_NAME (if no common tree, leave blank)'
-        required: false
-      VENDOR_BLOBS_URL:
-        description: 'VENDOR_BLOBS_URL'
-        required: true
-      VENDOR_BLOBS_BRANCH:
-        description: 'VENDOR_BLOBS_BRANCH'
-        required: true
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+    - name: Display Run Parameters
+      run: |
+        echo "::group::User Environment Variables"
+        echo "ROM_NAME: ${{ github.event.inputs.ROM_NAME }}"
+        echo "ANDROID_VERSION: ${{ github.event.inputs.ANDROID_VERSION }}"
+        echo "::endgroup::"
