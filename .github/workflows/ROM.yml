@@ -86,11 +86,3 @@ jobs:
         echo "BUILD_TYPE: ${{ github.event.inputs.BUILD_TYPE }}"
         echo "BUILD_TARGET: ${{ github.event.inputs.BUILD_TARGET }}"
         echo "::endgroup::"
-
-    - name: Clone device tree
-      run: |
-        git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./device/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.DEVICE_CODENAME }}
-
-    - name: Clone kernel
-      run: |
-        git clone ${{ github.event.inputs.KERNEL_SOURCE_URL }} -b ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} ./kernel/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.KERNEL_SOURCE_FOLDER_NAME }}
