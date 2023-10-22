@@ -3,35 +3,35 @@ name: ROM Build
 on:
   workflow_dispatch:
     inputs:
-      ROM_NAME:
-        description: 'ROM_NAME (Only support Arrow,Lineage,PixelExperience,AOSPA,crDroid,Evolution-X. Other ROM please create an issue in this repository.)'
+      ROM_NAME_ANDROID_VERSION:
+        description: 'ROM_NAME&ANDROID_VERSION (Support ROM please see Readme.md.)'
         required: true
-      ANDROID_VERSION:
-        description: 'ANDROID_VERSION (Only support 13,14)'
+      DEVICE_PATH:
+        description: 'DEVICE_PATH'
         required: true
-      ANDROID_VERSION2:
-        description: 'ANDROID_VERSION (Only support 13,14)'
+      DEVICE_TREE_URL_BRANCH:
+        description: 'DEVICE_TREE_URL&BRANCH'
         required: true
-      ANDROID_VERSION3:
-        description: 'ANDROID_VERSION (Only support 13,14)'
+      KERNEL_SOURCE_URL_BRANCH:
+        description: 'KERNEL_SOURCE_URL&BRANCH'
         required: true
-      ANDROID1_VERSION:
-        description: 'ANDROID_VERSION (Only support 13,14)'
+      KERNEL_SOURCE_PATH:
+          description: 'KERNEL_SOURCE_PATH'
+          required: true
+      VENDOR_BLOBS_URL_BRANCH:
+        description: 'VENDOR_BLOBS_URL&BRANCH'
         required: true
-      ANDROID_VERSION4:
-        description: 'ANDROID_VERSION (Only support 13,14)'
-        required: true
-      ANDROID_VERSION7:
-        description: 'ANDROID_VERSION (Only support 13,14)'
-        required: true
-      ANDROID_VERSION8:
-        description: 'ANDROID_VERSION (Only support 13,14)'
-        required: true
-      ANDROID_VERSION9:
-        description: 'ANDROID_VERSION (Only support 13,14)'
-        required: true
-      10ANDROID_VERSION:
-        description: 'ANDROID_VERSION (Only support 13,14)'
+      COMMON_TREE_URL_BRANCH:
+        description: 'COMMON_TREE_URL&BRANCH (if no common tree, leave blank)'
+        required: false
+      COMMON_BLOBS_URL_BRANCH:
+        description: 'COMMON_BLOBS_URL&BRANCH (if no common tree, leave blank)'
+        required: false
+      COMMON_PATH:
+        description: 'COMMON_PATH (if no common tree, leave blank)'
+        required: false
+      MAKEFILE_NAME_BUILD_TYPE:
+        description: 'MAKEFILE_NAME&BUILD_TYPE'
         required: true
 
 jobs:
@@ -41,6 +41,51 @@ jobs:
     - name: Display Run Parameters
       run: |
         echo "::group::User Environment Variables"
-        echo "ROM_NAME: ${{ github.event.inputs.ROM_NAME }}"
-        echo "ANDROID_VERSION: ${{ github.event.inputs.ANDROID_VERSION }}"
+        echo "ROM_NAME&ANDROID_VERSION: ${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}"
+        echo "DEVICE_PATH: ${{ github.event.inputs.DEVICE_PATH }}"
+        echo "DEVICE_TREE_URL_BRANCH: ${{ github.event.inputs.DEVICE_TREE_URL_BRANCH }}"
+        echo "KERNEL_SOURCE_URL_BRANCH: ${{ github.event.inputs.KERNEL_SOURCE_URL_BRANCH }}"
+        echo "KERNEL_SOURCE_FOLDER_NAME: ${{ github.event.inputs.KERNEL_SOURCE_PATH }}"
+        echo "VENDOR_BLOBS_URL_BRANCH: ${{ github.event.inputs.VENDOR_BLOBS_URL_BRANCH }}"
+        echo "COMMON_TREE_URL_BRANCH: ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }}"
+        echo "COMMON_BLOBS_URL_BRANCH: ${{ github.event.inputs.COMMON_BLOBS_URL_BRANCH }}"
+        echo "COMMON_PATH: ${{ github.event.inputs.COMMON_PATH }}"
+        echo "MAKEFILE_NAME_BUILD_TYPE: ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}"
         echo "::endgroup::"
+
+    - name: Clone device tree
+      run: |
+        git clone ${{ github.event.inputs.DEVICE_TREE_URL_BRANCH }} ./device/${{ github.event.inputs.DEVICE_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Clone common tree
+      if: |
+        ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }} != null 
+      run: |
+        git clone ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }} ./device/${{ github.event.inputs.COMMON_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Clone kernel
+      run: |
+        git clone ${{ github.event.inputs.KERNEL_SOURCE_URL_BRANCH }} ./kernel/${{ github.event.inputs.KERNEL_SOURCE_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Clone vendor blobs
+      run: |
+        git clone ${{ github.event.inputs.VENDOR_BLOBS_URL_BRANCH }} ./vendor/${{ github.event.inputs.DEVICE_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Clone common blobs
+      if: |
+        ${{ github.event.inputs.COMMON_BLOBS_URL_BRANCH }} != null 
+      run: |
+        git clone ${{ github.event.inputs.COMMON_BLOBS_URL_BRANCH }} ./vendor/${{ github.event.inputs.COMMON_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Building ROM
+      run: |
+        . build/envsetup.sh
+        make clean
+        lunch ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}
+        make
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
