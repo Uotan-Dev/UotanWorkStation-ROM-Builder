@@ -60,7 +60,7 @@ jobs:
 
     - name: Clone common tree
       if: |
-        ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }} != null 
+        github.event.inputs.COMMON_TREE_URL_BRANCH != null 
       run: |
         git clone ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }} --depth=1 ./device/${{ github.event.inputs.COMMON_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
@@ -77,7 +77,7 @@ jobs:
 
     - name: Clone common blobs
       if: |
-        ${{ github.event.inputs.COMMON_BLOBS_URL_BRANCH }} != null 
+        github.event.inputs.COMMON_BLOBS_URL_BRANCH != null 
       run: |
         git clone ${{ github.event.inputs.COMMON_BLOBS_URL_BRANCH }} --depth=1 ./vendor/${{ github.event.inputs.COMMON_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
