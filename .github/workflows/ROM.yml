@@ -30,6 +30,12 @@ on:
       ANDROID_VERSION9:
         description: 'ANDROID_VERSION (Only support 13,14)'
         required: true
+      10ANDROID_VERSION:
+        description: 'ANDROID_VERSION (Only support 13,14)'
+        required: true
+      ANDROID_VERSION11:
+        description: 'ANDROID_VERSION (Only support 13,14)'
+        required: true
 
 jobs:
   build:
