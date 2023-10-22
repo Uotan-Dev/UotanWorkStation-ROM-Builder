@@ -90,31 +90,26 @@ jobs:
     - name: Clone device tree
       run: |
         git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./device/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.DEVICE_CODENAME }}
-      working-directory: ./Android/${{ github.event.inputs.ANDROID_VERSION }}/${{ github.event.inputs.ROM_NAME }}
 
     - name: Clone common tree
       if: |
         ${{ github.event.inputs.COMMON_TREE_URL }} != null 
       run: |
         git clone ${{ github.event.inputs.COMMON_TREE_URL }} -b ${{ github.event.inputs.COMMON_TREE_BRANCH }} ./device/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.COMMON_TREE_FOLDER_NAME }}
-      working-directory: ./Android/${{ github.event.inputs.ANDROID_VERSION }}/${{ github.event.inputs.ROM_NAME }}
 
     - name: Clone kernel
       run: |
         git clone ${{ github.event.inputs.KERNEL_SOURCE_URL }} -b ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} ./kernel/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.KERNEL_SOURCE_FOLDER_NAME }}
-      working-directory: ./Android/${{ github.event.inputs.ANDROID_VERSION }}/${{ github.event.inputs.ROM_NAME }}
 
     - name: Clone vendor blobs
       run: |
         git clone ${{ github.event.inputs.VENDOR_BLOBS_URL }} -b ${{ github.event.inputs.VENDOR_BLOBS_BRANCH }} ./vendor/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.DEVICE_CODENAME }}
-      working-directory: ./Android/${{ github.event.inputs.ANDROID_VERSION }}/${{ github.event.inputs.ROM_NAME }}
 
     - name: Clone common blobs
       if: |
         ${{ github.event.inputs.COMMON_BLOBS_URL }} != null 
       run: |
         git clone ${{ github.event.inputs.COMMON_BLOBS_URL }} -b ${{ github.event.inputs.COMMON_BLOBS_BRANCH }} ./vendor/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.COMMON_BLOBS_FOLDER_NAME }}
-      working-directory: ./Android/${{ github.event.inputs.ANDROID_VERSION }}/${{ github.event.inputs.ROM_NAME }}
 
     - name: Building ROM
       run: |
@@ -122,4 +117,3 @@ jobs:
         mka clean
         lunch ${{ github.event.inputs.MAKEFILE_NAME }}-${{ github.event.inputs.BUILD_TYPE }}
         mka ${{ github.event.inputs.BUILD_TARGET }}
-      working-directory: ./Android/${{ github.event.inputs.ANDROID_VERSION }}/${{ github.event.inputs.ROM_NAME }}
