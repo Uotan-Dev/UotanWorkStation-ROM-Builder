@@ -9,6 +9,27 @@ on:
       ANDROID_VERSION:
         description: 'ANDROID_VERSION (Only support 13,14)'
         required: true
+      ANDROID_VERSION2:
+        description: 'ANDROID_VERSION (Only support 13,14)'
+        required: true
+      ANDROID_VERSION3:
+        description: 'ANDROID_VERSION (Only support 13,14)'
+        required: true
+      ANDROID1_VERSION:
+        description: 'ANDROID_VERSION (Only support 13,14)'
+        required: true
+      ANDROID_VERSION4:
+        description: 'ANDROID_VERSION (Only support 13,14)'
+        required: true
+      ANDROID_VERSION7:
+        description: 'ANDROID_VERSION (Only support 13,14)'
+        required: true
+      ANDROID_VERSION8:
+        description: 'ANDROID_VERSION (Only support 13,14)'
+        required: true
+      ANDROID_VERSION9:
+        description: 'ANDROID_VERSION (Only support 13,14)'
+        required: true
 
 jobs:
   build:
