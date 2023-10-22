@@ -1,26 +1,12 @@
 name: Test
 on: 
     workflow_dispatch:
-      inputs:
-        ROM_NAME:
-          description: 'ROM_NAME (Only support Arrow,Lineage,PixelExperience,AOSPA,crDroid,Evolution-X. Other ROM please create an issue in this repository.)'
-          required: true
 
 jobs:
   my-job:
     name: My Job
     runs-on: self-hosted
     steps:
-    - name: Set variable
+    - name: Test
       run: |
-          if [ ${{ github.event.inputs.ROM_NAME }} == "Arrow" ]; then
-            ROM_PATCH="ROM1"
-          else
-            ROM_PATCH="ROM2"
-          fi
-          echo "::env name=new_variable::$ROM_PATCH"
-          echo "${{ env.name }}"
-
-    - name: Print
-      run: |
-        echo "${{ env.name }}"
+          ls
