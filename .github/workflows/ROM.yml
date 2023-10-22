@@ -94,7 +94,3 @@ jobs:
     - name: Clone kernel
       run: |
         git clone ${{ github.event.inputs.KERNEL_SOURCE_URL }} -b ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} ./kernel/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.KERNEL_SOURCE_FOLDER_NAME }}
-
-    - name: Clone vendor blobs
-      run: |
-        git clone ${{ github.event.inputs.VENDOR_BLOBS_URL }} -b ${{ github.event.inputs.VENDOR_BLOBS_BRANCH }} ./vendor/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.DEVICE_CODENAME }}
