@@ -91,12 +91,6 @@ jobs:
       run: |
         git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./device/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.DEVICE_CODENAME }}
 
-    - name: Clone common tree
-      if: |
-        ${{ github.event.inputs.COMMON_TREE_URL }} != null 
-      run: |
-        git clone ${{ github.event.inputs.COMMON_TREE_URL }} -b ${{ github.event.inputs.COMMON_TREE_BRANCH }} ./device/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.COMMON_TREE_FOLDER_NAME }}
-
     - name: Clone kernel
       run: |
         git clone ${{ github.event.inputs.KERNEL_SOURCE_URL }} -b ${{ github.event.inputs.KERNEL_SOURCE_BRANCH }} ./kernel/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.KERNEL_SOURCE_FOLDER_NAME }}
@@ -104,12 +98,6 @@ jobs:
     - name: Clone vendor blobs
       run: |
         git clone ${{ github.event.inputs.VENDOR_BLOBS_URL }} -b ${{ github.event.inputs.VENDOR_BLOBS_BRANCH }} ./vendor/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.DEVICE_CODENAME }}
-
-    - name: Clone common blobs
-      if: |
-        ${{ github.event.inputs.COMMON_BLOBS_URL }} != null 
-      run: |
-        git clone ${{ github.event.inputs.COMMON_BLOBS_URL }} -b ${{ github.event.inputs.COMMON_BLOBS_BRANCH }} ./vendor/${{ github.event.inputs.BRAND_NAME }}/${{ github.event.inputs.COMMON_BLOBS_FOLDER_NAME }}
 
     - name: Building ROM
       run: |
