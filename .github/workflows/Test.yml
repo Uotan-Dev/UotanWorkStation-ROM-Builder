@@ -1,5 +1,4 @@
-name: Recovery Build
-
+name: Test
 on:
   workflow_dispatch:
 
