@@ -10,8 +10,9 @@ jobs:
       - name: Run script
         id: script
         run: |
+          setOutput
           generated_variable="some value"
-          echo "{generated_variable}={$generated_variable}" >> $GITHUB_OUTPUT
+          echo "::setOutput name=generated_variable::$generated_variable"
 
       - name: Access generated variable from script
         run: |
