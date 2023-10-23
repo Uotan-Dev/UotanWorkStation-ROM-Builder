@@ -55,6 +55,7 @@ jobs:
 
     - name: Clone device tree
       run: |
+        rm -rf ./device/${{ github.event.inputs.DEVICE_PATH }}
         git clone ${{ github.event.inputs.DEVICE_TREE_URL_BRANCH }} --depth=1 ./device/${{ github.event.inputs.DEVICE_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
 
@@ -62,16 +63,19 @@ jobs:
       if: |
         github.event.inputs.COMMON_TREE_URL_BRANCH != null 
       run: |
+        rm -rf ./device/${{ github.event.inputs.COMMON_PATH }}
         git clone ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }} --depth=1 ./device/${{ github.event.inputs.COMMON_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
 
     - name: Clone kernel
       run: |
+        rm -rf ./kernel/${{ github.event.inputs.KERNEL_SOURCE_PATH }}
         git clone ${{ github.event.inputs.KERNEL_SOURCE_URL_BRANCH }} --depth=1 ./kernel/${{ github.event.inputs.KERNEL_SOURCE_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
 
     - name: Clone vendor blobs
       run: |
+        rm -rf ./vendor/${{ github.event.inputs.DEVICE_PATH }}
         git clone ${{ github.event.inputs.VENDOR_BLOBS_URL_BRANCH }} --depth=1 ./vendor/${{ github.event.inputs.DEVICE_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
 
@@ -79,13 +83,36 @@ jobs:
       if: |
         github.event.inputs.COMMON_BLOBS_URL_BRANCH != null 
       run: |
+        rm -rf ./vendor/${{ github.event.inputs.COMMON_PATH }}
         git clone ${{ github.event.inputs.COMMON_BLOBS_URL_BRANCH }} --depth=1 ./vendor/${{ github.event.inputs.COMMON_PATH }}
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
 
     - name: Building ROM
+      id: out-puts
       run: |
+        source /home/localhost/actions-runner/Workfolder/UotanWorkStation-ROM-Builder/UotanWorkStation-ROM-Builder/Make.txt
         . build/envsetup.sh
-        make clean
         lunch ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}
-        make
+        $${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+        echo "OUT=$OUT" >> "$GITHUB_OUTPUT"
       working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Find ROM
+      id: upload-file
+      run: |
+        ZIP_FILES=$(find . -maxdepth 1 -type f -name "*.zip" -printf '%f\n' | awk '{ print length($0), $0 }' | sort -nr | cut -d' ' -f2-)
+        ROM_ZIP=$(echo "$ZIP_FILES" | head -n 1)
+        echo "ROM_ZIP=$ROM_ZIP" >> "$GITHUB_OUTPUT"
+      working-directory: ${{ steps.out-puts.outputs.OUT }}
+
+    - name: Upload to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ${{ steps.out-puts.outputs.OUT }}/${{ steps.upload-file.outputs.ROM_ZIP }}
+        name: ${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}-${{ github.run_id }}
+        tag_name: ${{ github.run_id }}
+        body: |
+          ROM Name & Android Version: ${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+          Device Name & Build Type: ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
