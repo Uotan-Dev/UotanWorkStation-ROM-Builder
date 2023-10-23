@@ -9,7 +9,9 @@ jobs:
     steps:
       - name: Set color
         id: color-selector
-        run: echo "SELECTED_COLOR=green" >> "$GITHUB_OUTPUT"
+        run: |
+          SELECTED_COLOR="green"
+          echo "SELECTED_COLOR=$SELECTED_COLOR" >> "$GITHUB_OUTPUT"
         
       - name: Get color
         env:
