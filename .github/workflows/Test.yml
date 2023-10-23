@@ -1,0 +1,19 @@
+name: Recovery Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  yourjob:
+    runs-on: self-hosted
+
+    steps:
+      - name: Run script
+        id: script
+        run: |
+          generated_variable="some value"
+          echo "::set-output name=generated_variable::$generated_variable"
+
+      - name: Access generated variable from script
+        run: |
+          echo "Generated variable value: ${{ steps.script.outputs.generated_variable }}"
