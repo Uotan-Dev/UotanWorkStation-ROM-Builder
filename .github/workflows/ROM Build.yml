@@ -1,0 +1,129 @@
+name: ROM Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      ROM_NAME_ANDROID_VERSION:
+        description: 'ROM_NAME&ANDROID_VERSION (Support ROM please see Readme.md.)'
+        required: true
+      DEVICE_PATH:
+        description: 'DEVICE_PATH'
+        required: true
+      DEVICE_TREE_URL_BRANCH:
+        description: 'DEVICE_TREE_URL&BRANCH'
+        required: true
+      KERNEL_SOURCE_URL_BRANCH:
+        description: 'KERNEL_SOURCE_URL&BRANCH'
+        required: false
+      KERNEL_SOURCE_PATH:
+        description: 'KERNEL_SOURCE_PATH'
+        required: false
+      VENDOR_BLOBS_URL_BRANCH:
+        description: 'VENDOR_BLOBS_URL&BRANCH'
+        required: false
+      COMMON_TREE_URL_BRANCH:
+        description: 'COMMON_TREE_URL&BRANCH (if no common tree, leave blank)'
+        required: false
+      COMMON_BLOBS_URL_BRANCH:
+        description: 'COMMON_BLOBS_URL&BRANCH (if no common tree, leave blank)'
+        required: false
+      COMMON_PATH:
+        description: 'COMMON_PATH (if no common tree, leave blank)'
+        required: false
+      MAKEFILE_NAME_BUILD_TYPE:
+        description: 'MAKEFILE_NAME&BUILD_TYPE'
+        required: true
+
+jobs:
+  Build:
+    runs-on: self-hosted
+    steps:
+    - name: Display run parameters
+      run: |
+        echo "::group::User Environment Variables"
+        echo "ROM_NAME&ANDROID_VERSION: ${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}"
+        echo "DEVICE_PATH: ${{ github.event.inputs.DEVICE_PATH }}"
+        echo "DEVICE_TREE_URL_BRANCH: ${{ github.event.inputs.DEVICE_TREE_URL_BRANCH }}"
+        echo "KERNEL_SOURCE_URL_BRANCH: ${{ github.event.inputs.KERNEL_SOURCE_URL_BRANCH }}"
+        echo "KERNEL_SOURCE_FOLDER_NAME: ${{ github.event.inputs.KERNEL_SOURCE_PATH }}"
+        echo "VENDOR_BLOBS_URL_BRANCH: ${{ github.event.inputs.VENDOR_BLOBS_URL_BRANCH }}"
+        echo "COMMON_TREE_URL_BRANCH: ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }}"
+        echo "COMMON_BLOBS_URL_BRANCH: ${{ github.event.inputs.COMMON_BLOBS_URL_BRANCH }}"
+        echo "COMMON_PATH: ${{ github.event.inputs.COMMON_PATH }}"
+        echo "MAKEFILE_NAME_BUILD_TYPE: ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}"
+        echo "::endgroup::"
+
+    - name: Clone device tree
+      run: |
+        rm -rf ./device/${{ github.event.inputs.DEVICE_PATH }}
+        git clone ${{ github.event.inputs.DEVICE_TREE_URL_BRANCH }} --depth=1 ./device/${{ github.event.inputs.DEVICE_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Clone common tree
+      if: |
+        github.event.inputs.COMMON_TREE_URL_BRANCH != null && github.event.inputs.COMMON_PATH != null
+      run: |
+        rm -rf ./device/${{ github.event.inputs.COMMON_PATH }}
+        git clone ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }} --depth=1 ./device/${{ github.event.inputs.COMMON_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Clone kernel
+      if: |
+        github.event.inputs.KERNEL_SOURCE_URL_BRANCH != null && github.event.inputs.KERNEL_SOURCE_PATH != null
+      run: |
+        rm -rf ./kernel/${{ github.event.inputs.KERNEL_SOURCE_PATH }}
+        git clone ${{ github.event.inputs.KERNEL_SOURCE_URL_BRANCH }} --depth=1 ./kernel/${{ github.event.inputs.KERNEL_SOURCE_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Clone vendor blobs
+      if: |
+        github.event.inputs.VENDOR_BLOBS_URL_BRANCH != null 
+      run: |
+        rm -rf ./vendor/${{ github.event.inputs.DEVICE_PATH }}
+        git clone ${{ github.event.inputs.VENDOR_BLOBS_URL_BRANCH }} --depth=1 ./vendor/${{ github.event.inputs.DEVICE_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Clone common blobs
+      if: |
+        github.event.inputs.COMMON_BLOBS_URL_BRANCH != null && github.event.inputs.COMMON_PATH != null
+      run: |
+        rm -rf ./vendor/${{ github.event.inputs.COMMON_PATH }}
+        git clone ${{ github.event.inputs.COMMON_BLOBS_URL_BRANCH }} --depth=1 ./vendor/${{ github.event.inputs.COMMON_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Building ROM
+      id: out-puts
+      run: |
+        source /home/localhost/actions-runner/Workfolder/UotanWorkStation-ROM-Builder/UotanWorkStation-ROM-Builder/Make.txt
+        . build/envsetup.sh
+        lunch ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}
+        echo "OUT=$OUT" >> "$GITHUB_OUTPUT"
+        $${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Upload error.log
+      uses: actions/upload-artifact@v3
+      if: ${{ failure() }}
+      with:
+        name: errorlog
+        path: /home/localhost/Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}/out/error.log
+
+    - name: Find ROM
+      id: upload-file
+      run: |
+        ZIP_FILES=$(find . -maxdepth 1 -type f -name "*.zip" -printf '%f\n' | awk '{ print length($0), $0 }' | sort -nr | cut -d' ' -f2-)
+        ROM_ZIP=$(echo "$ZIP_FILES" | head -n 1)
+        echo "ROM_ZIP=$ROM_ZIP" >> "$GITHUB_OUTPUT"
+      working-directory: ${{ steps.out-puts.outputs.OUT }}
+
+    - name: Upload to release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ${{ steps.out-puts.outputs.OUT }}/${{ steps.upload-file.outputs.ROM_ZIP }}
+        name: ${{ steps.upload-file.outputs.ROM_ZIP }}-${{ github.run_id }}
+        tag_name: ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}
+        body: |
+          ROM Name & Android Version: ${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+          Device Name & Build Type: ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
