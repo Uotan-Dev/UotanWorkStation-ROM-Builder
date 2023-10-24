@@ -1,0 +1,27 @@
+name: Repo Sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      ANDROID_OR_RECOVERY:
+        description: 'ANDROID_OR_RECOVERY'
+        required: true
+      NAME_VERSION:
+        description: 'NAME_VERSION'
+        required: true
+
+jobs:
+  Sync:
+    runs-on: self-hosted
+    steps:
+    - name: Display run parameters
+      run: |
+        echo "::group::User Environment Variables"
+        echo "ANDROID_OR_RECOVERY: ${{ github.event.inputs.ANDROID_OR_RECOVERY }}"
+        echo "NAME_VERSION: ${{ github.event.inputs.NAME_VERSION }}"
+        echo "::endgroup::"
+
+    - name: Repo sync
+      run: |
+        repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+      working-directory: ./${{ github.event.inputs.ANDROID_OR_RECOVERY }}/${{ github.event.inputs.NAME_VERSION }}
