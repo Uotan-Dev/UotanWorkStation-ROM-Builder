@@ -1,125 +1,61 @@
-# Use Github Action to compile Recovery
+# 通过 Github Action 使用 UotanWorkStation 编译 ROM 和 Recovery
 
-- Support TWRP, SHRP compilation and production
+当前支持的ROM（名称_Android版本,顺序为A-Z）：<br/>
+1.AlphaDroid_13<br/>
+2.AOSPA_13<br/>
+3.AOSPA_14<br/>
+4.Arrow_13<br/>
+5.Cipher_13<br/>
+6.crDroid_13<br/>
+7.DerpFest_14<br/>
+8.DroidX_13<br/>
+9.EvolutionX_13<br/>
+10.EvolutionX_14<br/>
+11.exTHmUI_13<br/>
+12.Lineage_13<br/>
+13.Lineage_14<br/>
+14.Miku_14<br/>
+15.PixelExperience_13<br/>
+16.PixelExperience_14<br/>
+17.RisingTech_13<br/>
+*由于ROM编译日志较长，GitHub Action 运行时无法显示全部日志，构建时请耐心等待！错误日志会上传至Artifacts。<br/>
 
----
-
-## OrangeFox is [here](https://github.com/azwhikaru/Action-OFRP-Builder)
-
----
-
-## Thanks to
-- All contributors
-
----
-
-## Release Notes
-```
-= 2022/10/28
-- OFRP manifest is changed, so not fully support OFRP now (if you can slove this, please submit a pull request!)
-
-= 2022/07/08
-- TWRP and TWRP-based 5.X ~ 12.X are ***ALL COMPILED SUCCESSFULLY***
-
-= 2022/07/06
-- Add support for 5.1 branch
-
-= 2022/07/05
-- Updated to work with trees back to 6.0
-- Add conditionals to include common trees for syncing
-- Update README for SSH keys
-
-= 2022/07/04
-- Updated to work with Android 12.1 AOSP minimal TWRP manifest
-
-= 2022/05/29
-- Should work correctly with Android 11 based source code
-
-= 2022/02/03
-- Due to the hardware resource limitation of GitHub action, this version cannot be compiled based on AOSP and other source codes of Android 11 and above. If necessary, please use local compilation
-
-= 2021/10/29: 
-- Refactored version 2.0
-- Completely reconstruct the use logic to reduce the difficulty of use
-- Optimize the parameter transfer part, now you can run multiple Workers at the same time
-```
+当前支持的Recovery（名称_Android版本,顺序为A-Z）：<br/>
+1.OrangeFox_12<br/>
+2.TWRP_12<br/>
 
 -----
 
-## Parameter Description
+## 参数说明
 
-| Name | Description | Example |
+| 名称 | 描述 | 示例 |
 | ------------ | -------------------- | ------------ |
-| `MANIFEST_URL` | Source address | https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git |
-| `MANIFEST_BRANCH` | Source branch | twrp-12.1 |
-| `DEVICE_TREE_URL` | Device address | https://github.com/TeamWin/android_device_asus_I003D |
-| `DEVICE_TREE_BRANCH` | Device branch | android-12.1 |
-| `DEVICE_PATH` | Device location | device/asus/I003D |
-| `COMMON_TREE_URL` | Common tree address | https://github.com/TeamWin/android_device_asus_sm8250-common |
-| `COMMON_PATH` | Common tree location | device/asus/sm8250-common |
-| `DEVICE_NAME` | Model name | I003D |
-| `MAKEFILE_NAME` | Makefile name | twrp_I003D |
-| `BUILD_TARGET` | Build Target Partition (boot/recovery/vendorboot) | recovery |
+| `ROM_NAME_ANDROID_VERSION` | 名称_Android版本 | PixelExperience_13（按照支持列表书写）|
+| `RECOVERY_NAME` | 名称_Android版本 | TWRP_13（按照支持列表书写）|
+| `NAME_VERSION` | 名称_Android版本 | Arrow_13（按照支持列表书写）|
+| `ROM_OR_RECOVERY` | Android或Recovery | Android |
+| `DEVICE_PATH` | 设备文件地址 | oneplus/fajita（品牌名称/设备代号）|
+| `DEVICE_TREE_URL_BRANCH` | 设备树链接和分支 | https://github.com/PixelExperience-Devices/device_oneplus_fajita.git -b thirteen |
+| `KERNEL_SOURCE_URL_BRANCH` | 内核源码和分支 | https://github.com/PixelExperience-Devices/kernel_oneplus_sdm845.git -b thirteen |
+| `KERNEL_SOURCE_PATH` | 内核文件地址 | oneplus/sdm845 |
+| `VENDOR_BLOBS_URL_BRANCH` | Vendor Blobs链接和分支 | https://gitlab.pixelexperience.org/android/vendor-blobs/vendor_oneplus_fajita.git -b thirteen |
+| `COMMON_TREE_URL_BRANCH` | 通用设备树链接和分支 | https://github.com/PixelExperience-Devices/device_oneplus_sdm845-common -b thirteen |
+| `COMMON_BLOBS_URL_BRANCH` | 通用Vendor Blobs链接和分支 | https://gitlab.pixelexperience.org/android/vendor-blobs/vendor_oneplus_sdm845-common.git -b thirteen |
+| `COMMON_PATH` | 通用文件地址 | oneplus/sdm845-common |
+| `MAKEFILE_NAME_BUILD_TYPE` | Makefile文件名和构建类型 | aosp_fajita-userdebug |
+| `BUILD_TARGET` | 构建目标（分区） | recovery |
 
 -----
 
-## How to use
-```
-For example, your username is: JohnSmith
-```
-#### 1. Click 'Fork' in the upper right corner of this repository
-![image](https://user-images.githubusercontent.com/37921907/177914706-c92476c5-7e14-4fb3-be94-0c8a11dae874.png)
-#### 2. After waiting for the automatic redirection, you will see your own username
-![image](https://user-images.githubusercontent.com/37921907/177915106-5bde6fc9-303c-479e-b290-22b48efd1e4e.png)
-#### 3. Change the [username and email](https://github.com/CaptainThrowback/Action-Recovery-Builder/blob/main/.github/workflows/Recovery%20Build.yml#L100-L101) in the workflow to reflect your Github credentials (optional)
-## Setting up SSH Keys (optional)
-#### 4. Go to Settings, then select Deploy keys and select "Add deploy key" button.
-
-#### 5. On your Android device, install [Termux](https://github.com/termux/termux-app/releases)
-
-#### 6. Install openssh in Termux and generate ssh keys. (Do not use passphrase for keys)
-NOTE: When creating the deploy key for a repository like git@github.com:owner/repo.git or https://github.com/owner/repo, put that URL into the key comment. (Hint: Try ssh-keygen ... -C "git@github.com:owner/repo.git".)
-owner = your Github username
-```
-pkg install openssh
-ssh-keygen -t ed25519 -C "git@github.com:owner/Action-Recovery-Builder.git"
-```
-#### 7. Add the keys to your repo. In Termux, use the following commands:
-```
-cd /data/data/com.termux/files/usr/etc/ssh
-cat ssh_host_ed25519_key.pub
-```
-  Select and copy the key then paste in the box for Key.
-  You can name it whatever you choose for the title.
-
-#### 8. Now to add your private ssh key. Back in Termux:
-```
-cat ssh_host_ed25519_key
-```
-   Copy the output from Termux.
-
-   In your browser, select *Secrets* under the Security tab.
-   Select Actions
-   Select New repository secret
-   For the New secret name, it should be SSH_PRIVATE_KEY
-   Paste the output from ssh_host_ed25519_key into the Value box.
-   Then select Add secret.
-
-## Building the Recovery
-#### 9. Click 'Actions-Recovery Build'
-![image](https://user-images.githubusercontent.com/37921907/177915304-8731ed80-1d49-48c9-9848-70d0ac8f2720.png)
-#### 10. Click 'Run workflow' and fill in according to the above 'parameter description'
-![image](https://user-images.githubusercontent.com/37921907/177915346-71c29149-78fb-4a00-996f-5d84ffc9eb8c.png)
-#### 11. After filling in, click 'Run workflow' to start running
+## 如何使用
+#### 1、点击 'Actions - ROM Build/Recovery Bulid/Repo Sync'。
+![](https://github.com/uotandev/UotanWorkStation-ROM-Builder/blob/main/PNG/Action.png)
+#### 2、点击 'Run workflow' 并按照上文 '参数说明' 填写。
+![](https://github.com/uotandev/UotanWorkStation-ROM-Builder/blob/main/PNG/Workflow.png)
+#### 3、填写完成后点击 'Run workflow' 开始运行。
 
 -----
 
-## Compilation results
-Can be downloaded at [Release](../../releases)
-
------
-## Remark
-
-#### TeamWin Recovery Project: https://github.com/minimal-manifest-twrp
-#### OrangeFox Recovery Project: https://gitlab.com/OrangeFox/Manifest
-#### SKYHAWK Recovery Project: https://github.com/SHRP/platform_manifest_twrp_omni
+## 编译结果
+- 构建成功可以前往Release下载。
+- 构建失败可以前往Artifacts获取错误日志。

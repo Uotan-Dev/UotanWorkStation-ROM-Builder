@@ -3,163 +3,83 @@ name: Recovery Build
 on:
   workflow_dispatch:
     inputs:
-      MANIFEST_URL:
-        description: 'MANIFEST_URL (if want to use SSH keys, use git@github.com:XXXXX)'
+      RECOVERY_NAME:
+        description: 'RECOVERY_NAME (Only support TWRP_12,OrangeFox_12.)'
         required: true
-        default: 'https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp'
-      MANIFEST_BRANCH:
-        description: 'MANIFEST_BRANCH'
-        required: true
-        default: 'twrp-12.1'
-      DEVICE_TREE_URL:
-        description: 'DEVICE_TREE_URL'
-        required: true
-        default: 'https://github.com/TeamWin/android_device_asus_I003D'
-      DEVICE_TREE_BRANCH:
-        description: 'DEVICE_TREE_BRANCH'
-        required: true
-        default: 'android-12.1'
       DEVICE_PATH:
         description: 'DEVICE_PATH'
         required: true
-        default: 'device/asus/I003D'
-      COMMON_TREE_URL:
-        description: 'COMMON_TREE_URL (if no common tree, leave blank)'
+      DEVICE_TREE_URL_BRANCH:
+        description: 'DEVICE_TREE_URL&BRANCH'
+        required: true
+      COMMON_TREE_URL_BRANCH:
+        description: 'COMMON_TREE_URL&BRANCH (if no common tree, leave blank)'
         required: false
       COMMON_PATH:
         description: 'COMMON_PATH (if no common tree, leave blank)'
         required: false
-      DEVICE_NAME:
-        description: 'DEVICE_NAME'
+      MAKEFILE_NAME_BUILD_TYPE:
+        description: 'MAKEFILE_NAME&BUILD_TYPE'
         required: true
-        default: 'I003D'
-      MAKEFILE_NAME:
-        description: 'MAKEFILE_NAME'
-        required: true
-        default: 'twrp_I003D'
       BUILD_TARGET:
         description: 'BUILD_TARGET'
         required: true
-        default: 'recovery'
 
 jobs:
-  build:
-    if: github.event.repository.owner.id == github.event.sender.id
-    runs-on: ubuntu-20.04
-    permissions:
-      contents: write
+  Build:
+    runs-on: self-hosted
     steps:
-    - name: Display Run Parameters
+    - name: Display run parameters
       run: |
         echo "::group::User Environment Variables"
-        echo "Manifest URL: ${{ github.event.inputs.MANIFEST_URL }}"
-        echo "Manifest Branch: ${{ github.event.inputs.MANIFEST_BRANCH }}"
-        echo "Device Tree URL: ${{ github.event.inputs.DEVICE_TREE_URL }}"
-        echo "Device Tree Branch: ${{ github.event.inputs.DEVICE_TREE_BRANCH }}"
-        echo "Device Path: ${{ github.event.inputs.DEVICE_PATH }}"
-        echo "Device Name: ${{ github.event.inputs.DEVICE_NAME }}"
-        echo "Makefile Name: ${{ github.event.inputs.MAKEFILE_NAME }}"
-        echo "Build Target: ${{ github.event.inputs.BUILD_TARGET }}.img"
+        echo "RECOVERY_NAME: ${{ github.event.inputs.RECOVERY_NAME }}"
+        echo "DEVICE_PATH: ${{ github.event.inputs.DEVICE_PATH }}"
+        echo "DEVICE_TREE_URL_BRANCH: ${{ github.event.inputs.DEVICE_TREE_URL_BRANCH }}"
+        echo "COMMON_TREE_URL_BRANCH: ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }}"
+        echo "COMMON_PATH: ${{ github.event.inputs.COMMON_PATH }}"
+        echo "MAKEFILE_NAME_BUILD_TYPE: ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}"
+        echo "BUILD_TARGET: ${{ github.event.inputs.BUILD_TARGET }}"
         echo "::endgroup::"
- 
-    # You might want to Checkout your repo first, but not mandatory
-    - name: Check Out
-      uses: actions/checkout@v3
-    # Cleanup The Actions Workspace Using Custom Composite Run Actions
-    - name: Cleanup
-      uses: rokibhasansagar/slimhub_actions@main
-      # That's it! Now use your normal steps
 
-    - name: Prepare the environment
-      run: |
-        sudo apt update
-        sudo apt -y upgrade
-        sudo apt -y install gperf gcc-multilib gcc-10-multilib g++-multilib g++-10-multilib libc6-dev lib32ncurses5-dev x11proto-core-dev libx11-dev tree lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc bc ccache lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libwxgtk3.0-gtk3-dev libxml2 lzop pngcrush schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp qemu-user-static libstdc++-10-dev libncurses5 python
-
-    - name: Install OpenJDK
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'zulu'
-        java-version: '8'
-
-    - name: Setup SSH Keys
-      if: ${{ startsWith(github.event.inputs.MANIFEST_URL, 'git@github.com') }}
-      uses: webfactory/ssh-agent@v0.5.4
-      with:
-          ssh-private-key: |
-              ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: Install repo
-      run: |
-        mkdir ~/bin
-        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-        chmod a+x ~/bin/repo
-        sudo ln -sf ~/bin/repo /usr/bin/repo
-      
-    - name: Initialize repo
-      run: |
-        mkdir workspace
-        cd workspace
-        echo "workspace-folder=$(pwd)" >> $GITHUB_OUTPUT
-        git config --global user.name "Nico170420"
-        git config --global user.email "b170420nc@gmail.com"
-        repo init --depth=1 -u ${{ github.event.inputs.MANIFEST_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }}
-      id: pwd
-          
-    - name: Repo Sync
-      run: |
-        repo sync -j$(nproc --all) --force-sync
-      working-directory: workspace
-      
     - name: Clone device tree
       run: |
-        git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
-      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+        rm -rf ./device/${{ github.event.inputs.DEVICE_PATH }}
+        git clone ${{ github.event.inputs.DEVICE_TREE_URL_BRANCH }} --depth=1 ./device/${{ github.event.inputs.DEVICE_PATH }}
+      working-directory: ./Recovery/${{ github.event.inputs.RECOVERY_NAME }}
 
     - name: Clone common tree
       if: |
-        github.event.inputs.COMMON_TREE_URL != null
-        && github.event.inputs.COMMON_PATH != null
+        github.event.inputs.COMMON_TREE_URL_BRANCH != null 
       run: |
-        git clone ${{ github.event.inputs.COMMON_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.COMMON_PATH }}
-      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+        rm -rf ./device/${{ github.event.inputs.COMMON_PATH }}
+        git clone ${{ github.event.inputs.COMMON_TREE_URL_BRANCH }} --depth=1 ./device/${{ github.event.inputs.COMMON_PATH }}
+      working-directory: ./Recovery/${{ github.event.inputs.RECOVERY_NAME }}
 
-    - name: Check Build Tree
-      uses: haya14busa/action-cond@v1
-      id: buildtree
+    - name: Building ROM
+      id: out-puts
+      run: |
+        . build/envsetup.sh
+        lunch ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}
+        echo "OUT=$OUT" >> "$GITHUB_OUTPUT"
+        mka ${{ github.event.inputs.BUILD_TARGET }}image
+      working-directory: ./Recovery/${{ github.event.inputs.RECOVERY_NAME }}
+
+    - name: Upload error.log
+      uses: actions/upload-artifact@v3
+      if: ${{ failure() }}
       with:
-        cond: ${{ github.event.inputs.MANIFEST_BRANCH == 'twrp-11' || github.event.inputs.MANIFEST_BRANCH == 'twrp-12.1' }}
-        if_true: twrp
-        if_false: omni
+        name: errorlog
+        path: /home/localhost/Recovery/${{ github.event.inputs.RECOVERY_NAME }}/out/error.log
 
-    - name: Sync Device Dependencies
-      run: |
-        bash ${GITHUB_WORKSPACE}/scripts/convert.sh ${{ github.event.inputs.DEVICE_PATH }}/${{ steps.buildtree.outputs.value }}.dependencies
-        repo sync -j$(nproc --all)
-      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
-      continue-on-error: true
-
-    - name: Set Swap Space
-      uses: pierotofy/set-swap-space@master
-      with:
-        swap-size-gb: 12
-
-    - name: Building recovery
-      run: |
-        source build/envsetup.sh
-        export ALLOW_MISSING_DEPENDENCIES=true
-        lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng && make clean && make ${{ github.event.inputs.BUILD_TARGET }}image -j$(nproc --all)
-      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
-
-    - name: Upload to Release
+    - name: Upload to release
       uses: softprops/action-gh-release@v1
       with:
-        files: workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/${{ github.event.inputs.BUILD_TARGET }}.img
-        name: ${{ github.event.inputs.DEVICE_NAME }}-${{ github.run_id }}
-        tag_name: ${{ github.run_id }}
+        files: ${{ steps.out-puts.outputs.OUT }}/${{ github.event.inputs.BUILD_TARGET }}.img
+        name: ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}-${{ github.run_id }}
+        tag_name: ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}
         body: |
-          Manifest: ${{ github.event.inputs.MANIFEST_BRANCH }}
-          Device: ${{ github.event.inputs.DEVICE_NAME }}
+          Recovery Name: ${{ github.event.inputs.RECOVERY_NAME }}
+          Device Name & Build Type: ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}
           Target: ${{ github.event.inputs.BUILD_TARGET }}.img
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
