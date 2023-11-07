@@ -7,7 +7,7 @@ on:
         description: 'ROM_NAME&ANDROID_VERSION (Support ROM please see Readme.md.)'
         required: true
       DEVICE_PATH:
-        description: 'DEVICE_PATH'
+        description: 'Device/Vendor Tree Path'
         required: true
       DEVICE_TREE_URL_BRANCH:
         description: 'DEVICE_TREE_URL&BRANCH'
@@ -16,19 +16,19 @@ on:
         description: 'KERNEL_SOURCE_URL&BRANCH'
         required: false
       KERNEL_SOURCE_PATH:
-        description: 'KERNEL_SOURCE_PATH'
+        description: 'Kernel Source Path'
         required: false
       VENDOR_BLOBS_URL_BRANCH:
-        description: 'VENDOR_BLOBS_URL&BRANCH'
+        description: 'VENDOR_TREE_URL&BRANCH'
         required: false
       COMMON_TREE_URL_BRANCH:
-        description: 'COMMON_TREE_URL&BRANCH (if no common tree, leave blank)'
+        description: 'DEVICE_COMMON_TREE_URL&BRANCH (if no common tree, leave blank)'
         required: false
       COMMON_BLOBS_URL_BRANCH:
-        description: 'COMMON_BLOBS_URL&BRANCH (if no common tree, leave blank)'
+        description: 'VENDOR_COMMON_TREE_URL&BRANCH (if no common tree, leave blank)'
         required: false
       COMMON_PATH:
-        description: 'COMMON_PATH (if no common tree, leave blank)'
+        description: 'Device/Vendor Common Tree Path (if no common tree, leave blank)'
         required: false
       MAKEFILE_NAME_BUILD_TYPE:
         description: 'MAKEFILE_NAME&BUILD_TYPE'
