@@ -83,3 +83,17 @@ jobs:
           Target: ${{ github.event.inputs.BUILD_TARGET }}.img
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Delete device tree
+      if: |
+        always()
+      run: |
+        rm -rf ./device/${{ github.event.inputs.DEVICE_PATH }}
+      working-directory: ./Recovery/${{ github.event.inputs.RECOVERY_NAME }}
+
+    - name: Delete common device tree
+      if: |
+        always() && github.event.inputs.COMMON_PATH != null
+      run: |
+        rm -rf ./device/${{ github.event.inputs.COMMON_PATH }}
+        working-directory: ./Recovery/${{ github.event.inputs.RECOVERY_NAME }}

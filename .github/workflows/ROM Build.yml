@@ -127,3 +127,20 @@ jobs:
           Device Name & Build Type: ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Delete device tree
+      if: |
+        always()
+      run: |
+        rm -rf ./device/${{ github.event.inputs.DEVICE_PATH }}
+        rm -rf ./kernel/${{ github.event.inputs.KERNEL_SOURCE_PATH }}
+        rm -rf ./vendor/${{ github.event.inputs.DEVICE_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
+
+    - name: Delete common device tree
+      if: |
+        always() && github.event.inputs.COMMON_PATH != null
+      run: |
+        rm -rf ./device/${{ github.event.inputs.COMMON_PATH }}
+        rm -rf ./vendor/${{ github.event.inputs.COMMON_PATH }}
+      working-directory: ./Android/${{ github.event.inputs.ROM_NAME_ANDROID_VERSION }}
