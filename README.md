@@ -2,22 +2,30 @@
 
 当前支持的ROM（名称_Android版本,顺序为A-Z）：<br/>
 1.AlphaDroid_13<br/>
-2.AOSPA_13<br/>
-3.AOSPA_14<br/>
-4.Arrow_13<br/>
-5.Cipher_13<br/>
-6.crDroid_13<br/>
-7.DerpFest_14<br/>
-8.DroidX_13<br/>
-9.EvolutionX_13<br/>
-10.EvolutionX_14<br/>
-11.exTHmUI_13<br/>
-12.Lineage_13<br/>
-13.Lineage_14<br/>
-14.Miku_14<br/>
-15.PixelExperience_13<br/>
-16.PixelExperience_14<br/>
-17.RisingTech_13<br/>
+2.AlphaDroid_14<br/>
+3.AOSPA_13<br/>
+4.AOSPA_14<br/>
+5.Arrow_13<br/>
+6.Arrow_14<br/>
+7.AwakenOS_14<br/>
+8.Cipher_13<br/>
+9.Cipher_14<br/>
+10.crDroid_13<br/>
+11.crDroid_14<br/>
+12.DroidX_13<br/>
+13.EvolutionX_13<br/>
+14.EvolutionX_14<br/>
+15.exTHmUI_13<br/>
+16.GrapheneOS_14<br/>
+17.Lineage_13<br/>
+18.Lineage_14<br/>
+19.Miku_14<br/>
+20.PixelExperience_13<br/>
+21.PixelExperience_14<br/>
+22.RisingTech_13<br/>
+23.RisingTech_14<br/>
+24.Superior_13<br/>
+25.Syberia_13<br/>
 *由于ROM编译日志较长，GitHub Action 运行时无法显示全部日志，构建时请耐心等待！错误日志会上传至Artifacts。<br/>
 
 当前支持的Recovery（名称_Android版本,顺序为A-Z）：<br/>
@@ -48,6 +56,10 @@
 -----
 
 ## 如何使用
+#### 前言
+该项目使用私有服务器进行构建，Fork后无法直接使用! 如果您想使用我们的服务器进行构建，您可以联系我们:<br/>
+QQ: 3089319531<br/>
+Telegram: https://t.me/mujianwu<br/>
 #### 1、点击 'Actions - ROM Build/Recovery Bulid/Repo Sync'。
 ![](https://github.com/Uotan-Dev/UotanWorkStation-ROM-Builder/blob/main/PNG/Action.png)
 #### 2、点击 'Run workflow' 并按照上文 '参数说明' 填写。
