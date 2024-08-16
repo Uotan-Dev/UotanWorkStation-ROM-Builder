@@ -94,7 +94,7 @@ jobs:
     - name: Building ROM
       id: out-puts
       run: |
-        source /home/localhost/actions-runner/Workfolder/UotanWorkStation-ROM-Builder/UotanWorkStation-ROM-Builder/Make.txt
+        source /home/localhost/actions-runner/_work/UotanWorkStation-ROM-Builder/UotanWorkStation-ROM-Builder/Make.txt
         . build/envsetup.sh
         lunch ${{ github.event.inputs.MAKEFILE_NAME_BUILD_TYPE }}
         echo "OUT=$OUT" >> "$GITHUB_OUTPUT"
